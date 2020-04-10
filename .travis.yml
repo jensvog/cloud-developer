@@ -20,4 +20,5 @@ before_install:
 install:
   - docker-compose -f course-03/exercises/udacity-c3-deployment/docker/docker-compose-build.yaml build --parallel 
   - docker login --username ${DH_username} --password ${DH_password}
-  - docker-compose course-03/exercises/udacity-c3-deployment/docker/docker-compose.yaml push 
+  - cd course-03/exercises/udacity-c3-deployment/docker/
+  - docker-compose push 
