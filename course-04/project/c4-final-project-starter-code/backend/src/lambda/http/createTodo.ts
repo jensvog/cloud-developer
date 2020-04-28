@@ -1,44 +1,25 @@
 import 'source-map-support/register'
-import * as AWS  from 'aws-sdk'
-import * as uuid from 'uuid'
 import * as middy from 'middy'
 import { cors } from 'middy/middlewares'
-
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
-
 import { CreateTodoRequest } from '../../requests/CreateTodoRequest'
-import { TodoItem } from '../../models/TodoItem'
 import { getUserId } from '../utils'
+import { createTodo } from '../../businessLogic/todos'
+import { createLogger } from '../../utils/logger'
 
-const todosTable = process.env.TODOS_TABLE
-const dynamoDBClient = new AWS.DynamoDB.DocumentClient()
+const logger = createLogger('createTodo');
 
 export const handler = middy(async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   const newTodo: CreateTodoRequest = JSON.parse(event.body)
 
-  // TODO: Implement creating a new TODO item
-  var todoItem: TodoItem = {
-    userId: getUserId(event),
-    todoId: uuid.v4(),
-    createdAt: new Date().toISOString(),
-    name: newTodo.name,
-    dueDate: newTodo.dueDate,
-    done: false
-  };
-  
-  console.log(newTodo);
-
-  await dynamoDBClient
-    .put({
-      TableName: todosTable,
-      Item: todoItem
-    })
-    .promise()
+  logger.info('Create new ToDo')
+  // TODODONE: Implement creating a new TODO item
+  const newItem = await createTodo(newTodo, getUserId(event));
 
   return {
     statusCode: 201,
     body: JSON.stringify({
-      item: todoItem
+      item: newItem
     })
   }
 })
